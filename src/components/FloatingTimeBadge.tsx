@@ -64,9 +64,9 @@ export function FloatingTimeBadge() {
 
   return (
     <div className="pointer-events-none fixed bottom-10 left-8 z-40 hidden sm:block">
-      <div className="text-left text-sm text-slate-900">
+      <div className="text-left text-sm">
         <div className="text-[15px] font-semibold">{time.dateLabel}</div>
-        <div className="mt-1 flex items-center gap-2 text-[13px] text-slate-800">
+        <div className="mt-1 flex items-center gap-2 text-[13px]">
           <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#2563eb]"></span>
           <span>
             {time.timeLabel}, India

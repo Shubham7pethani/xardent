@@ -38,7 +38,10 @@ body {
   background: transparent;
   border-bottom: 1px solid transparent;
   box-shadow: none;
-  transition: none;
+  transition: background-color 700ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    border-color 700ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    box-shadow 700ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 .xd-arc {
@@ -78,6 +81,13 @@ body {
   gap: 18px;
   position: relative;
   z-index: 1;
+  transition:
+    padding 800ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    margin 800ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    max-width 800ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    box-shadow 800ms cubic-bezier(0.22, 0.61, 0.36, 1) 80ms,
+    border-radius 800ms cubic-bezier(0.22, 0.61, 0.36, 1) 80ms,
+    background-color 160ms ease-out;
 }
 
 .xd-brand {
@@ -93,6 +103,9 @@ body {
 .xd-logo {
   width: 40px;
   height: 40px;
+  transition: width 800ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    height 800ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 800ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 .xd-brandText {
@@ -105,6 +118,8 @@ body {
   font-size: 22px;
   font-weight: 700;
   letter-spacing: 0.2px;
+  transition: font-size 800ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 800ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 .xd-brandTld {
@@ -119,6 +134,10 @@ body {
   justify-content: flex-end;
   gap: 14px;
   justify-self: end;
+}
+
+.xd-actions {
+  transition: gap 800ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 .xd-burger {
@@ -175,6 +194,10 @@ body {
   gap: 16px;
   position: relative;
   z-index: 1;
+}
+
+.xd-menu {
+  transition: gap 800ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 .xd-item {
@@ -325,7 +348,67 @@ body {
   box-shadow: none;
   white-space: nowrap;
   transition: background-color 160ms ease, border-color 160ms ease,
-    transform 160ms ease;
+    transform 160ms ease,
+    height 800ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    padding 800ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    font-size 800ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.xd-header--shrunk {
+  background: transparent;
+  border-bottom-color: transparent;
+  box-shadow: none;
+}
+
+.xd-header--shrunk .xd-container {
+  max-width: 1180px;
+  margin: 10px auto 0;
+  padding: 8px clamp(22px, 3vw, 32px);
+  background: #020617;
+  border-radius: 999px;
+  box-shadow: none;
+  border: 1px solid rgba(15, 23, 42, 0.9);
+}
+
+.xd-header--shrunk .xd-logo {
+  width: 30px;
+  height: 30px;
+}
+
+.xd-header--shrunk .xd-brandName,
+.xd-header--shrunk .xd-brandTld {
+  font-size: 18px;
+  color: #f9fafb;
+}
+
+.xd-header--shrunk .xd-menu {
+  gap: 12px;
+}
+
+.xd-header--shrunk .xd-link {
+  color: rgba(248, 250, 252, 0.9);
+}
+
+.xd-header--shrunk .xd-item[data-open="true"]>.xd-link {
+  color: #ffffff;
+}
+
+.xd-header--shrunk .xd-item:not(:last-child)::after {
+  color: rgba(248, 250, 252, 0.4);
+}
+
+.xd-header--shrunk .xd-caret {
+  border-top-color: currentColor;
+}
+
+.xd-header--shrunk .xd-actions {
+  gap: 10px;
+}
+
+.xd-header--shrunk .xd-cta {
+  height: 32px;
+  padding: 0 16px;
+  font-size: 11px;
 }
 
 .xd-cta:hover {

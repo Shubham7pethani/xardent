@@ -21,6 +21,7 @@ export default function Navbar() {
   const [isDesktop, setIsDesktop] = React.useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
   const [brandScrambleTrigger, setBrandScrambleTrigger] = React.useState(0);
+  const [isShrunk, setIsShrunk] = React.useState(false);
 
   React.useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -51,12 +52,31 @@ export default function Navbar() {
     };
   }, []);
 
+  React.useEffect(() => {
+    const handleScroll = () => {
+      const y = window.scrollY;
+      const shouldShrink = y > 40;
+
+      setIsShrunk((prev) => (prev === shouldShrink ? prev : shouldShrink));
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   const panelTransition: Transition = prefersReducedMotion
     ? { duration: 0 }
     : transition;
 
   return (
-    <header className="xd-header" data-xd-navbar ref={headerRef}>
+    <header
+      className={`xd-header${isShrunk ? " xd-header--shrunk" : ""}`}
+      data-xd-navbar
+      ref={headerRef}
+    >
       <div className="xd-container">
         <a
           className="xd-brand"
