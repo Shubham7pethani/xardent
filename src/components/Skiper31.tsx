@@ -22,13 +22,13 @@ const CharacterV1 = ({
 
   const x = useTransform(
     scrollYProgress,
-    [0, 0.5, 1],
-    [distanceFromCenter * 80, 0, distanceFromCenter * -80]
+    [0, 0.4, 1],
+    [distanceFromCenter * 80, 0, 0]
   );
   const rotateX = useTransform(
     scrollYProgress,
-    [0, 0.5, 1],
-    [distanceFromCenter * 25, 0, distanceFromCenter * -25]
+    [0, 0.4, 1],
+    [distanceFromCenter * 25, 0, 0]
   );
 
   return (
@@ -73,20 +73,20 @@ const CharacterV3 = ({
 
   const x = useTransform(
     scrollYProgress,
-    [0, 0.5, 1],
-    [distanceFromCenter * 60, 0, distanceFromCenter * -60]
+    [0, 0.4, 1],
+    [distanceFromCenter * 60, 0, 0]
   );
   const rotate = useTransform(
     scrollYProgress,
-    [0, 0.5, 1],
-    [distanceFromCenter * 25, 0, distanceFromCenter * -25]
+    [0, 0.4, 1],
+    [distanceFromCenter * 25, 0, 0]
   );
   const y = useTransform(
     scrollYProgress,
-    [0, 0.5, 1],
-    [-Math.abs(distanceFromCenter) * 30, 0, Math.abs(distanceFromCenter) * 30]
+    [0, 0.4, 1],
+    [-Math.abs(distanceFromCenter) * 30, 0, 0]
   );
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.9, 1.05, 0.95]);
+  const scale = useTransform(scrollYProgress, [0, 0.4, 1], [0.9, 1.05, 1.05]);
 
   return (
     <motion.img
@@ -176,6 +176,10 @@ const Skiper31 = () => {
             />
           ))}
         </div>
+
+        <p className="mt-10 text-center text-[11px] font-semibold uppercase tracking-[0.25em] text-slate-300/80">
+          Scroll to experience Xardent
+        </p>
       </div>
     </section>
   );
