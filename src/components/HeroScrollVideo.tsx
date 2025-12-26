@@ -55,6 +55,8 @@ export type HeroScrollVideoProps = {
     | { widthVw: number; heightVh: number; borderRadius?: number }
     | "fullscreen";
   scrollHeightVh?: number; // total scroll height for sticky section (default 280)
+  scrub?: number; // ScrollTrigger scrub smoothing (higher = smoother)
+  expandDelay?: number; // delay (timeline units) before expansion starts
   showHeroExitAnimation?: boolean; // headline roll-away (default true)
   sticky?: boolean; // keep media sticky (default true)
   overlayBlur?: number; // px blur for overlay content at start (default 10)
@@ -64,6 +66,9 @@ export type HeroScrollVideoProps = {
   // Smooth scrolling
   smoothScroll?: boolean; // initialize Lenis (default true)
   lenisOptions?: Record<string, unknown>;
+
+  // Extra effects
+  screenSplit?: boolean;
 
   className?: string;
   style?: CSSProperties;
@@ -77,6 +82,8 @@ const DEFAULTS = {
   initialBoxSize: 360,
   targetSize: "fullscreen" as const,
   scrollHeightVh: 280,
+  scrub: 1.1,
+  expandDelay: 0,
   overlayBlur: 10,
   overlayRevealDelay: 0.35,
   eases: {
@@ -133,6 +140,8 @@ export const HeroScrollVideo: React.FC<HeroScrollVideoProps> = ({
   initialBoxSize = DEFAULTS.initialBoxSize,
   targetSize = DEFAULTS.targetSize,
   scrollHeightVh = DEFAULTS.scrollHeightVh,
+  scrub = DEFAULTS.scrub,
+  expandDelay = DEFAULTS.expandDelay,
   showHeroExitAnimation = true,
   sticky = true,
   overlayBlur = DEFAULTS.overlayBlur,
@@ -141,6 +150,9 @@ export const HeroScrollVideo: React.FC<HeroScrollVideoProps> = ({
 
   smoothScroll = true,
   lenisOptions,
+
+  // Extra effects
+  screenSplit = false,
 
   className,
   style,
@@ -151,6 +163,8 @@ export const HeroScrollVideo: React.FC<HeroScrollVideoProps> = ({
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const overlayCaptionRef = useRef<HTMLDivElement | null>(null);
   const overlayContentRef = useRef<HTMLDivElement | null>(null);
+  const screenCurtainRef = useRef<HTMLDivElement | null>(null);
+  const curtainCardsRef = useRef<HTMLDivElement | null>(null);
 
   const isClient = typeof window !== "undefined";
 
@@ -243,6 +257,20 @@ export const HeroScrollVideo: React.FC<HeroScrollVideoProps> = ({
       const overlayCaption = overlayCaptionRef.current;
       const overlayContent = overlayContentRef.current;
       const headline = headlineRef.current!;
+      const screenCurtain = screenCurtainRef.current;
+      const mediaWrapper = rootRef.current?.querySelector(
+        ".hsv-media-wrapper"
+      ) as HTMLDivElement | null;
+      const boxLabels = rootRef.current?.querySelectorAll<HTMLElement>(
+        ".hsv-box-label"
+      );
+      const curtainCards = curtainCardsRef.current?.querySelectorAll<HTMLElement>(
+        ".hsv-split-card"
+      );
+      const curtainCardInners =
+        curtainCardsRef.current?.querySelectorAll<HTMLElement>(
+          ".hsv-split-card-inner"
+        );
 
       // Darkening overlay inside the media box (only when overlay content exists)
       if (container && hasOverlayContent) {
@@ -263,7 +291,7 @@ export const HeroScrollVideo: React.FC<HeroScrollVideoProps> = ({
             trigger: headline,
             start: "top top",
             end: "top+=420 top",
-            scrub: 1.1,
+            scrub,
           },
         });
 
@@ -298,7 +326,7 @@ export const HeroScrollVideo: React.FC<HeroScrollVideoProps> = ({
           trigger: triggerEl,
           start: "top top",
           end: "bottom bottom",
-          scrub: 1.1,
+          scrub,
         },
       });
 
@@ -335,7 +363,20 @@ export const HeroScrollVideo: React.FC<HeroScrollVideoProps> = ({
         (gsap as any).set([overlayContent, overlayCaption], { y: 30 });
       }
 
+      if (screenSplit && screenCurtain) {
+        (gsap as any).set(screenCurtain, {
+          opacity: 0,
+          clipPath: "polygon(50% 0,50% 0,50% 100%,50% 100%)",
+        });
+      }
+
       // Animate the container to expand, then shrink back with the same smooth easing
+      const expandStart = Math.max(0, expandDelay || 0);
+
+      if (expandStart > 0) {
+        mainTl.to({}, { duration: expandStart });
+      }
+
       mainTl.to(
         container,
         {
@@ -347,7 +388,7 @@ export const HeroScrollVideo: React.FC<HeroScrollVideoProps> = ({
           repeat: 1,
           yoyo: true,
         },
-        0
+        expandStart
       );
 
       if (hasOverlayContent && overlayEl && overlayContent && overlayCaption) {
@@ -359,25 +400,26 @@ export const HeroScrollVideo: React.FC<HeroScrollVideoProps> = ({
               backgroundColor: "rgba(0,0,0,0.4)",
               ease: "power2.out",
             },
-            0
+            expandStart
           );
         }
+
         // Reveal overlay panel
         mainTl
           .to(
             overlayEl,
             {
               clipPath: "inset(0% 0 0 0)",
-              backdropFilter: `blur(${overlayBlur}px)`,
+              backdropFilter: `blur(${overlayBlur}px)` ,
               ease: overlayEase,
             },
-            overlayRevealDelay
+            expandStart + overlayRevealDelay
           )
           // Content slides in and unblurs
           .to(
             overlayCaption,
             { y: 0, ease: overlayEase },
-            overlayRevealDelay + 0.05
+            expandStart + overlayRevealDelay + 0.05
           )
           .to(
             overlayContent,
@@ -387,12 +429,86 @@ export const HeroScrollVideo: React.FC<HeroScrollVideoProps> = ({
               scale: 1,
               ease: overlayEase,
             },
-            overlayRevealDelay + 0.05
+            expandStart + overlayRevealDelay + 0.05
           );
       }
 
+      if (screenSplit && screenCurtain) {
+        mainTl.to(
+          screenCurtain,
+          {
+            opacity: 1,
+            clipPath: "polygon(0 0,100% 0,100% 100%,0 100%)",
+            ease: containerEase,
+            duration: 0.9,
+          },
+          ">-0.05"
+        );
+
+        if (mediaWrapper) {
+          mainTl.to(
+            mediaWrapper,
+            {
+              opacity: 0,
+              scale: 0.9,
+              ease: "power2.inOut",
+              duration: 0.8,
+            },
+            "<"
+          );
+        }
+
+        if (boxLabels && boxLabels.length) {
+          mainTl.to(
+            boxLabels,
+            {
+              opacity: 0,
+              y: 40,
+              ease: "power2.inOut",
+              duration: 0.8,
+            },
+            "<"
+          );
+        }
+
+        if (curtainCards && curtainCards.length) {
+          mainTl.fromTo(
+            curtainCards,
+            {
+              y: 260,
+              opacity: 0,
+              rotateX: 16,
+            },
+            {
+              y: 0,
+              opacity: 1,
+              rotateX: 0,
+              ease: "power3.out",
+              duration: 1.1,
+              stagger: 0.22,
+            },
+            ">-0.1"
+          );
+        }
+
+        if (curtainCardInners && curtainCardInners.length) {
+          mainTl.to(
+            curtainCardInners,
+            {
+              rotateY: 180,
+              ease: textEase,
+              duration: 0.9,
+              stagger: 0.08,
+            },
+            ">+0.2"
+          );
+        }
+      }
+
       // Try to play video
-      const videoEl = container.querySelector("video") as HTMLVideoElement | null;
+      const videoEl = container.querySelector(
+        "video"
+      ) as HTMLVideoElement | null;
       if (videoEl) {
         const tryPlay = () => videoEl.play().catch(() => {});
         tryPlay();
@@ -415,7 +531,9 @@ export const HeroScrollVideo: React.FC<HeroScrollVideoProps> = ({
         if ((ScrollTrigger as any)?.getAll && rootRef.current) {
           (ScrollTrigger as any)
             .getAll()
-            .forEach((t: any) => rootRef.current!.contains(t.trigger) && t.kill(true));
+            .forEach(
+              (t: any) => rootRef.current!.contains(t.trigger) && t.kill(true)
+            );
         }
       } catch {}
       try {
@@ -454,12 +572,16 @@ export const HeroScrollVideo: React.FC<HeroScrollVideoProps> = ({
     smoothScroll,
     lenisOptions,
     hasOverlayContent,
+    screenSplit,
   ]);
 
   // Media rendering
   const renderMedia = () => {
     if (mediaType === "image") {
       const src = typeof media === "string" ? media : media?.mp4 || "";
+      if (!src) {
+        return <div className="hsv-media-fallback" aria-hidden="true" />;
+      }
       return (
         <img
           src={src}
@@ -551,6 +673,70 @@ export const HeroScrollVideo: React.FC<HeroScrollVideoProps> = ({
               </div>
             </div>
           </div>
+
+          {screenSplit ? (
+            <div className="hsv-screen-curtain" ref={screenCurtainRef}>
+              <div className="hsv-split-heading">DESIGN. CODE. SCALE.</div>
+              <div className="hsv-split-cards" ref={curtainCardsRef}>
+                <div className="hsv-split-card">
+                  <div className="hsv-split-card-inner">
+                    <div className="hsv-split-card-face hsv-split-card-front">
+                      <span className="hsv-split-card-text">
+                        Does your business need a clear digital identity that feels modern and professional?
+                      </span>
+                    </div>
+                    <div className="hsv-split-card-face hsv-split-card-back">
+                      <span className="hsv-split-card-text">
+                        We craft strong digital identities that reflect your brand's vision, build trust, and leave a lasting impression.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="hsv-split-card">
+                  <div className="hsv-split-card-inner">
+                    <div className="hsv-split-card-face hsv-split-card-front">
+                      <span className="hsv-split-card-text">
+                        Is your software or website confusing users instead of guiding them smoothly?
+                      </span>
+                    </div>
+                    <div className="hsv-split-card-face hsv-split-card-back">
+                      <span className="hsv-split-card-text">
+                        We design intuitive user experiences that feel natural, reduce friction, and keep users engaged from start to finish.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="hsv-split-card">
+                  <div className="hsv-split-card-inner">
+                    <div className="hsv-split-card-face hsv-split-card-front">
+                      <span className="hsv-split-card-text">
+                        Are you struggling to turn visitors into real customers or leads?
+                      </span>
+                    </div>
+                    <div className="hsv-split-card-face hsv-split-card-back">
+                      <span className="hsv-split-card-text">
+                        Our conversion-focused design and development turns attention into action and visitors into loyal customers.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="hsv-split-card">
+                  <div className="hsv-split-card-inner">
+                    <div className="hsv-split-card-face hsv-split-card-front">
+                      <span className="hsv-split-card-text">
+                        Looking to build smart software that actually supports your business growth?
+                      </span>
+                    </div>
+                    <div className="hsv-split-card-face hsv-split-card-back">
+                      <span className="hsv-split-card-text">
+                        We build scalable, high-performance software solutions aligned with your business goals — today and tomorrow.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : null}
         </div>
       </div>
 
@@ -645,16 +831,172 @@ export const HeroScrollVideo: React.FC<HeroScrollVideoProps> = ({
           z-index: 2;
         }
 
+        .hsv-screen-curtain {
+          position: absolute;
+          inset: 0;
+          background: #020617;
+          z-index: 4;
+          pointer-events: none;
+          clip-path: polygon(50% 0, 50% 0, 50% 100%, 50% 100%);
+        }
+
+        .hsv-split-heading {
+          position: absolute;
+          top: 14vh;
+          left: 0;
+          right: 0;
+          text-align: center;
+          font-size: clamp(32px, 4.6vw, 56px);
+          font-weight: 800;
+          letter-spacing: 0.36em;
+          text-transform: uppercase;
+          color: rgba(241, 245, 249, 0.9);
+          pointer-events: none;
+        }
+
+        .hsv-split-cards {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: clamp(12px, 2vw, 20px);
+          padding-inline: clamp(16px, 6vw, 64px);
+          pointer-events: none;
+        }
+
+        .hsv-split-card {
+          width: 300px;
+          height: 340px;
+          min-height: 340px;
+          border-radius: 24px;
+          perspective: 1200px;
+        }
+
+        .hsv-split-card-inner {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          border-radius: inherit;
+          transform-style: preserve-3d;
+          box-shadow: 0 26px 70px rgba(15, 23, 42, 0.7);
+        }
+
+        .hsv-split-card-face {
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          padding: 26px 20px 24px;
+          background: #6366f1;
+          color: #f9fafb;
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+          backface-visibility: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          overflow: hidden;
+          isolation: isolate;
+        }
+
+        .hsv-split-card-text {
+          position: relative;
+          display: block;
+          width: 100%;
+          max-width: 100%;
+          margin: 0 auto;
+          z-index: 1;
+        }
+
+        .hsv-split-card-front .hsv-split-card-text {
+          text-wrap: pretty;
+          text-wrap: balance;
+        }
+
+        .hsv-split-card-face::before,
+        .hsv-split-card-face::after {
+          content: "";
+          position: absolute;
+          width: 120px;
+          height: 120px;
+          background:
+            linear-gradient(#18181b, #18181b) 50% 0 / 26px 120px no-repeat,
+            linear-gradient(#18181b, #18181b) 0 50% / 120px 26px no-repeat;
+          border-radius: 24px;
+          opacity: 0.9;
+          animation: hsv-card-spin 5s linear infinite;
+          z-index: 0;
+          pointer-events: none;
+        }
+
+        .hsv-split-card-face::before {
+          top: -40px;
+          left: -34px;
+        }
+
+        .hsv-split-card-face::after {
+          bottom: -52px;
+          right: -36px;
+        }
+
+        .hsv-split-card-front {
+          background: #60a5fa;
+          font-size: 1.28rem;
+          line-height: 1.45;
+          font-weight: 800;
+          letter-spacing: 0.01em;
+        }
+
+        .hsv-split-card-back {
+          background: #1e40af;
+          transform: rotateY(180deg);
+          font-size: 1.08rem;
+          line-height: 1.65;
+          font-weight: 650;
+          opacity: 0.95;
+        }
+
+        @keyframes hsv-card-spin {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
+        @media (max-width: 900px) {
+          .hsv-split-cards {
+            align-items: flex-end;
+            justify-content: flex-start;
+            overflow-x: auto;
+            padding-bottom: 40px;
+          }
+
+          .hsv-split-card {
+            min-width: 220px;
+          }
+        }
+
         .hsv-media {
           position: relative;
           width: var(--initial-size);
           height: var(--initial-size);
           border-radius: 20px;
           overflow: hidden;
-          background: #ffffff;
+          background: #020617;
           display: grid;
           place-items: center;
           box-shadow: 0 24px 80px rgba(15, 23, 42, 0.45);
+        }
+
+        .hsv-media-fallback {
+          width: 100%;
+          height: 100%;
+          background:
+            radial-gradient(700px 300px at 20% 10%, rgba(99, 102, 241, 0.35), transparent 60%),
+            radial-gradient(700px 320px at 80% 30%, rgba(34, 211, 238, 0.22), transparent 62%),
+            linear-gradient(180deg, rgba(2, 6, 23, 0.9), rgba(2, 6, 23, 1));
         }
 
         .hsv-overlay {

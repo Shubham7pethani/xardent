@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import React, { useRef } from "react";
 import { cn } from "@/lib/utils";
 
@@ -108,6 +108,12 @@ const Skiper31 = () => {
     offset: ["start end", "end start"],
   });
 
+  const smoothScrollYProgress = useSpring(scrollYProgress, {
+    stiffness: 40,
+    damping: 22,
+    mass: 0.9,
+  });
+
   const line1 = "Partnering with forward";
   const line2 = "thinking companies worldwide";
 
@@ -147,7 +153,7 @@ const Skiper31 = () => {
                 char={char}
                 index={index}
                 centerIndex={centerIndexLine1}
-                scrollYProgress={scrollYProgress}
+                scrollYProgress={smoothScrollYProgress}
               />
             ))}
           </div>
@@ -159,7 +165,7 @@ const Skiper31 = () => {
                 char={char}
                 index={index}
                 centerIndex={centerIndexLine2}
-                scrollYProgress={scrollYProgress}
+                scrollYProgress={smoothScrollYProgress}
               />
             ))}
           </div>
@@ -172,7 +178,7 @@ const Skiper31 = () => {
               char={char}
               index={index}
               centerIndex={iconCenterIndex}
-              scrollYProgress={scrollYProgress}
+              scrollYProgress={smoothScrollYProgress}
             />
           ))}
         </div>

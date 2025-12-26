@@ -4,6 +4,7 @@ import "./globals.css";
 import "./navbar.css";
 import Navbar from "@/components/Navbar";
 import { SmoothCursor } from "@/components/ui/smooth-cursor";
+import LenisProvider from "@/components/LenisProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,11 +31,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="cursor-none">
-          <SmoothCursor />
-          <Navbar />
-          {children}
-        </div>
+        <LenisProvider>
+          <div className="cursor-none">
+            <SmoothCursor />
+            <Navbar />
+            {children}
+          </div>
+        </LenisProvider>
       </body>
     </html>
   );

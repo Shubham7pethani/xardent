@@ -20,13 +20,16 @@ const XardentVideo: React.FC = () => {
       bottomLabel={<div className="hsv-bottom-label">Visionary Brands</div>}
       initialBoxSize={140}
       targetSize="fullscreen"
-      scrollHeightVh={260}
+      scrollHeightVh={520}
+      scrub={3.4}
+      expandDelay={1.4}
       showHeroExitAnimation={false}
       sticky={true}
       overlayBlur={16}
       overlayRevealDelay={0.4}
-      eases={{ container: "expo.out", overlay: "expo.out", text: "power3.inOut" }}
+      eases={{ container: "none", overlay: "power1.out", text: "power2.inOut" }}
       smoothScroll={false}
+      screenSplit
       mediaType="image"
       media={undefined}
       className="xardent-scroll-video"
