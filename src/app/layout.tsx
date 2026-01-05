@@ -5,6 +5,8 @@ import "./navbar.css";
 import Navbar from "@/components/Navbar";
 import { SmoothCursor } from "@/components/ui/smooth-cursor";
 import LenisProvider from "@/components/LenisProvider";
+import { FloatingTimeBadge } from "@/components/FloatingTimeBadge";
+import { FloatingContacts } from "@/components/FloatingContacts";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +38,9 @@ export default function RootLayout({
             <SmoothCursor />
             <Navbar />
             {children}
+            {/* Global floating UI - appears on every page */}
+            <FloatingTimeBadge />
+            <FloatingContacts />
           </div>
         </LenisProvider>
       </body>

@@ -2,6 +2,7 @@
 import React from "react";
 import { motion, type Transition } from "framer-motion";
 import { TextScramble } from "@/components/TextScramble";
+import Link from "next/link";
 
 const transition: Transition = {
   type: "spring",
@@ -15,13 +16,14 @@ const transition: Transition = {
 export default function Navbar() {
   const headerRef = React.useRef<HTMLElement | null>(null);
   const [active, setActive] = React.useState<string | null>(null);
-  const [megaTab, setMegaTab] = React.useState<"design" | "development" | "seo">(
+  const [megaTab, setMegaTab] = React.useState<"design" | "development" | "dataAI" | "seoGrowth">(
     "development"
   );
   const [isDesktop, setIsDesktop] = React.useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
   const [brandScrambleTrigger, setBrandScrambleTrigger] = React.useState(0);
   const [isShrunk, setIsShrunk] = React.useState(false);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -53,6 +55,22 @@ export default function Navbar() {
   }, []);
 
   React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setActive(null);
+      }
+    };
+
+    if (active) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [active]);
+
+  React.useEffect(() => {
     const handleScroll = () => {
       const y = window.scrollY;
       const shouldShrink = y > 40;
@@ -78,9 +96,9 @@ export default function Navbar() {
       ref={headerRef}
     >
       <div className="xd-container">
-        <a
+        <Link
           className="xd-brand"
-          href="#"
+          href="/"
           onMouseEnter={() => setBrandScrambleTrigger(1)}
           onMouseLeave={() => setBrandScrambleTrigger(0)}
         >
@@ -94,9 +112,9 @@ export default function Navbar() {
               Xardent
             </TextScramble>
           </span>
-        </a>
+        </Link>
 
-        <nav className="xd-nav" aria-label="Primary" data-xd-nav onMouseLeave={() => setActive(null)}>
+        <nav className="xd-nav" aria-label="Primary" data-xd-nav ref={dropdownRef}>
           <ul className="xd-menu" role="menubar">
             <li
               className="xd-item xd-hasDropdown xd-item--mega"
@@ -167,23 +185,35 @@ export default function Navbar() {
                           onMouseEnter={() => setMegaTab("development")}
                           onClick={() => setMegaTab("development")}
                         >
-                          Developing
+                          Development
                         </button>
                         <button
                           className={`xd-megaTab${
-                            megaTab === "seo" ? " is-active" : ""
+                            megaTab === "dataAI" ? " is-active" : ""
                           }`}
                           type="button"
                           role="tab"
-                          aria-selected={megaTab === "seo" ? "true" : "false"}
-                          onMouseEnter={() => setMegaTab("seo")}
-                          onClick={() => setMegaTab("seo")}
+                          aria-selected={megaTab === "dataAI" ? "true" : "false"}
+                          onMouseEnter={() => setMegaTab("dataAI")}
+                          onClick={() => setMegaTab("dataAI")}
                         >
-                          SEO &amp; Marketing
+                          Data &amp; AI
+                        </button>
+                        <button
+                          className={`xd-megaTab${
+                            megaTab === "seoGrowth" ? " is-active" : ""
+                          }`}
+                          type="button"
+                          role="tab"
+                          aria-selected={megaTab === "seoGrowth" ? "true" : "false"}
+                          onMouseEnter={() => setMegaTab("seoGrowth")}
+                          onClick={() => setMegaTab("seoGrowth")}
+                        >
+                          SEO &amp; Digital Growth
                         </button>
 
-                        <a className="xd-megaAll" href="#">
-                          <span>LET&apos;S BUILD YOUR PRODUCT</span>
+                        <a className="xd-megaAll" href="/contact">
+                          <span>Let&apos;s Build Your Product</span>
                           <span
                             className="xd-megaArrow"
                             aria-hidden="true"
@@ -201,38 +231,41 @@ export default function Navbar() {
                         >
                           <div className="xd-megaCols">
                             <div className="xd-megaCol">
-                              <a className="xd-megaLink" href="#">
-                                UI/UX Design
-                              </a>
-                              <a className="xd-megaLink" href="#">
-                                UI/UX Consulting
-                              </a>
-                              <a className="xd-megaLink" href="#">
-                                UX Research
-                              </a>
-                              <a className="xd-megaLink" href="#">
-                                UX Design Audit
-                              </a>
-                              <a className="xd-megaLink" href="#">
-                                Usability Testing
-                              </a>
+                              <div className="xd-megaItem">
+                                <a className="xd-megaLink" href="/services/design">
+                                  UI / UX Design
+                                </a>
+                                <div className="text-xs text-slate-500">Web apps, dashboards, admin panels, SaaS products</div>
+                              </div>
+                              
+                              <div className="xd-megaItem">
+                                <a className="xd-megaLink" href="/services/design">
+                                  Product Design (SaaS & Enterprise)
+                                </a>
+                                <div className="text-xs text-slate-500">From idea → wireframes → final UI</div>
+                              </div>
+                              
+                              <div className="xd-megaItem">
+                                <a className="xd-megaLink" href="/services/design">
+                                  Design Systems
+                                </a>
+                                <div className="text-xs text-slate-500">Scalable component systems (Figma + dev-ready)</div>
+                              </div>
                             </div>
                             <div className="xd-megaCol">
-                              <a className="xd-megaLink" href="#">
-                                Design System
-                              </a>
-                              <a className="xd-megaLink" href="#">
-                                Heuristic Evaluation
-                              </a>
-                              <a className="xd-megaLink" href="#">
-                                Interaction Design
-                              </a>
-                              <a className="xd-megaLink" href="#">
-                                Digital Prototyping
-                              </a>
-                              <a className="xd-megaLink" href="#">
-                                Digital Branding
-                              </a>
+                              <div className="xd-megaItem">
+                                <a className="xd-megaLink" href="/services/design">
+                                  UX Audit & Optimization
+                                </a>
+                                <div className="text-xs text-slate-500">Improve usability, conversion, clarity</div>
+                              </div>
+                              
+                              <div className="xd-megaItem">
+                                <a className="xd-megaLink" href="/services/design">
+                                  Prototyping & Wireframing
+                                </a>
+                                <div className="text-xs text-slate-500">Clickable prototypes before development</div>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -246,59 +279,143 @@ export default function Navbar() {
                         >
                           <div className="xd-megaCols">
                             <div className="xd-megaCol">
-                              <a className="xd-megaLink" href="#">
-                                Front End Development
-                              </a>
-                              <a className="xd-megaLink" href="#">
-                                Back End Development
-                              </a>
-                              <a className="xd-megaLink" href="#">
-                                Full Stack Development
-                              </a>
-                              <a className="xd-megaLink" href="#">
-                                API Development
-                              </a>
+                              <div className="xd-megaItem">
+                                <a className="xd-megaLink" href="/services/development">
+                                  Web Application Development
+                                </a>
+                                <div className="text-xs text-slate-500">React, Next.js, full-stack web apps</div>
+                              </div>
+                              
+                              <div className="xd-megaItem">
+                                <a className="xd-megaLink" href="/services/development">
+                                  Custom Software Development
+                                </a>
+                                <div className="text-xs text-slate-500">Business software, internal tools, automation</div>
+                              </div>
+                              
+                              <div className="xd-megaItem">
+                                <a className="xd-megaLink" href="/services/development">
+                                  SaaS Product Development
+                                </a>
+                                <div className="text-xs text-slate-500">MVP to scalable SaaS platforms</div>
+                              </div>
+                              
+                              <div className="xd-megaItem">
+                                <a className="xd-megaLink" href="/services/development">
+                                  Enterprise & Banking Systems
+                                </a>
+                                <div className="text-xs text-slate-500">Secure, role-based, compliance-ready systems</div>
+                              </div>
                             </div>
                             <div className="xd-megaCol">
-                              <a className="xd-megaLink" href="#">
-                                AI Development Services
-                              </a>
-                              <a className="xd-megaLink" href="#">
-                                ML Development Services
-                              </a>
-                              <a className="xd-megaLink" href="#">
-                                Cloud Application Development
-                              </a>
-                              <a className="xd-megaLink" href="#">
-                                Low-code No-code Development
-                              </a>
+                              <div className="xd-megaItem">
+                                <a className="xd-megaLink" href="/services/development">
+                                  Desktop Applications (Windows)
+                                </a>
+                                <div className="text-xs text-slate-500">High-performance desktop software</div>
+                              </div>
+                              
+                              <div className="xd-megaItem">
+                                <a className="xd-megaLink" href="/services/development">
+                                  API & Backend Development
+                                </a>
+                                <div className="text-xs text-slate-500">Secure APIs, databases, integrations</div>
+                              </div>
+                              
+                              <div className="xd-megaItem">
+                                <a className="xd-megaLink" href="/services/development">
+                                  Cloud & Deployment
+                                </a>
+                                <div className="text-xs text-slate-500">Scalable hosting, CI/CD, performance tuning</div>
+                              </div>
                             </div>
                           </div>
                         </div>
 
                         <div
                           className={`xd-megaPanel${
-                            megaTab === "seo" ? " is-active" : ""
+                            megaTab === "dataAI" ? " is-active" : ""
                           }`}
                           role="tabpanel"
-                          data-xd-mega-panel="seo"
+                          data-xd-mega-panel="dataAI"
                         >
                           <div className="xd-megaCols">
                             <div className="xd-megaCol">
-                              <a className="xd-megaLink" href="#">
-                                All In One Digital Marketing
-                              </a>
-                              <a className="xd-megaLink" href="#">
-                                Search Engine Optimisation (SEO)
-                              </a>
+                              <div className="xd-megaItem">
+                                <a className="xd-megaLink" href="/services/data-ai">
+                                  Data Analytics & Dashboards
+                                </a>
+                                <div className="text-xs text-slate-500">Business insights, reports, KPIs</div>
+                              </div>
+                              
+                              <div className="xd-megaItem">
+                                <a className="xd-megaLink" href="/services/data-ai">
+                                  AI-Powered Applications
+                                </a>
+                                <div className="text-xs text-slate-500">Intelligent systems, automation, chat-based AI</div>
+                              </div>
+                              
+                              <div className="xd-megaItem">
+                                <a className="xd-megaLink" href="/services/data-ai">
+                                  Document & Image AI Solutions
+                                </a>
+                                <div className="text-xs text-slate-500">OCR, data extraction, AI processing</div>
+                              </div>
                             </div>
                             <div className="xd-megaCol">
-                              <a className="xd-megaLink" href="#">
-                                Content Marketing
-                              </a>
-                              <a className="xd-megaLink" href="#">
-                                Social Media Marketing
-                              </a>
+                              <div className="xd-megaItem">
+                                <a className="xd-megaLink" href="/services/data-ai">
+                                  Process Automation
+                                </a>
+                                <div className="text-xs text-slate-500">Reduce manual work using AI & scripts</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          className={`xd-megaPanel${
+                            megaTab === "seoGrowth" ? " is-active" : ""
+                          }`}
+                          role="tabpanel"
+                          data-xd-mega-panel="seoGrowth"
+                        >
+                          <div className="xd-megaCols">
+                            <div className="xd-megaCol">
+                              <div className="xd-megaItem">
+                                <a className="xd-megaLink" href="/services/seo-growth">
+                                  Technical SEO
+                                </a>
+                                <div className="text-xs text-slate-500">Speed, structure, performance optimization</div>
+                              </div>
+                              
+                              <div className="xd-megaItem">
+                                <a className="xd-megaLink" href="/services/seo-growth">
+                                  On-Page SEO
+                                </a>
+                                <div className="text-xs text-slate-500">Content, keywords, site architecture</div>
+                              </div>
+                              
+                              <div className="xd-megaItem">
+                                <a className="xd-megaLink" href="/services/seo-growth">
+                                  Website Optimization
+                                </a>
+                                <div className="text-xs text-slate-500">Conversion & performance improvements</div>
+                              </div>
+                            </div>
+                            <div className="xd-megaCol">
+                              <div className="xd-megaItem">
+                                <a className="xd-megaLink" href="/services/seo-growth">
+                                  Search Ranking Improvement
+                                </a>
+                                <div className="text-xs text-slate-500">Long-term organic growth</div>
+                              </div>
+                              
+                              <div className="xd-megaItem">
+                                <a className="xd-megaLink" href="/services/seo-growth">
+                                  Analytics & Tracking Setup
+                                </a>
+                                <div className="text-xs text-slate-500">Google Analytics, Search Console, insights</div>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -386,12 +503,11 @@ export default function Navbar() {
                       <div className="xd-darkIntro">
                         <div className="xd-darkTitle">Solutions</div>
                         <div className="xd-darkText">
-                          Ready-to-ship solutions and custom builds for startups
-                          and growing businesses.
+                          Business-ready software solutions built for real-world operations.
                         </div>
 
-                        <a className="xd-megaAll" href="#">
-                          <span>EXPLORE SOLUTIONS</span>
+                        <a className="xd-megaAll" href="/solutions">
+                          <span>Explore Solutions</span>
                           <span
                             className="xd-megaArrow"
                             aria-hidden="true"
@@ -402,41 +518,77 @@ export default function Navbar() {
                       <div className="xd-darkBody">
                         <div className="xd-megaCols">
                           <div className="xd-megaCol">
-                            <a className="xd-megaLink" href="#">
-                              SaaS MVP Development
-                            </a>
-                            <a className="xd-megaLink" href="#">
-                              Custom Web Applications
-                            </a>
-                            <a className="xd-megaLink" href="#">
-                              Mobile App Solutions
-                            </a>
-                            <a className="xd-megaLink" href="#">
-                              E-commerce Platforms
-                            </a>
+                            <div className="xd-megaItem">
+                              <a className="xd-megaLink" href="/solutions">
+                                Billing &amp; Invoicing Systems
+                              </a>
+                              <div className="text-xs text-slate-400">GST-ready billing, invoices, payments, reports</div>
+                            </div>
+                            <div className="xd-megaItem">
+                              <a className="xd-megaLink" href="/solutions">
+                                Banking &amp; Financial Software
+                              </a>
+                              <div className="text-xs text-slate-400">Secure transaction systems, role-based access, compliance-ready platforms</div>
+                            </div>
+                            <div className="xd-megaItem">
+                              <a className="xd-megaLink" href="/solutions">
+                                Enterprise Business Systems
+                              </a>
+                              <div className="text-xs text-slate-400">ERP, CRM, internal tools, workflow management</div>
+                            </div>
+                            <div className="xd-megaItem">
+                              <a className="xd-megaLink" href="/solutions">
+                                Business Analytics &amp; Dashboards
+                              </a>
+                              <div className="text-xs text-slate-400">Sales, finance &amp; operations insights in real time</div>
+                            </div>
+                            <div className="xd-megaItem">
+                              <a className="xd-megaLink" href="/solutions">
+                                AI Automation Solutions
+                              </a>
+                              <div className="text-xs text-slate-400">Process automation, AI workflows, smart business tools</div>
+                            </div>
                           </div>
                           <div className="xd-megaCol">
-                            <a className="xd-megaLink" href="#">
-                              AI Automation &amp; Chatbots
-                            </a>
-                            <a className="xd-megaLink" href="#">
-                              Cloud &amp; DevOps Setup
-                            </a>
-                            <a className="xd-megaLink" href="#">
-                              System Integrations
-                            </a>
-                            <a className="xd-megaLink" href="#">
-                              Maintenance &amp; Support
-                            </a>
+                            <div className="xd-megaItem">
+                              <a className="xd-megaLink" href="/solutions">
+                                Document &amp; OCR Solutions
+                              </a>
+                              <div className="text-xs text-slate-400">Invoice scanning, data extraction, document processing</div>
+                            </div>
+                            <div className="xd-megaItem">
+                              <a className="xd-megaLink" href="/solutions">
+                                Web &amp; Application Platforms
+                              </a>
+                              <div className="text-xs text-slate-400">Business websites, portals, SaaS &amp; custom platforms</div>
+                            </div>
+                            <div className="xd-megaItem">
+                              <a className="xd-megaLink" href="/solutions">
+                                Desktop Software (Windows)
+                              </a>
+                              <div className="text-xs text-slate-400">Billing, accounting &amp; enterprise desktop applications</div>
+                            </div>
+                            <div className="xd-megaItem">
+                              <a className="xd-megaLink" href="/solutions">
+                                Cloud &amp; System Integration
+                              </a>
+                              <div className="text-xs text-slate-400">Hosting, APIs, third-party integrations, system syncing</div>
+                            </div>
+                            <div className="xd-megaItem">
+                              <a className="xd-megaLink" href="/contact">
+                                Maintenance &amp; Support
+                              </a>
+                              <div className="text-xs text-slate-400">Updates, monitoring, performance &amp; long-term support</div>
+                            </div>
                           </div>
                         </div>
 
                         <div className="xd-megaFooter">
                           <span className="xd-megaFooterText">
-                            Have a product idea? Let&apos;s ship it fast.
+                            Ready-to-use and custom-built software solutions for businesses, enterprises, and financial systems.
                           </span>
-                          <a className="xd-megaContact" href="#">
-                            CONTACT US
+                          <a className="xd-megaContact" href="/solutions">
+                            Explore Solutions
                           </a>
                         </div>
                       </div>
@@ -448,23 +600,23 @@ export default function Navbar() {
             <li
               className="xd-item xd-hasDropdown"
               role="none"
-              data-open={active === "Hire Us" ? "true" : "false"}
+              data-open={active === "Contact Us" ? "true" : "false"}
             >
               <button
                 className="xd-link"
                 type="button"
                 role="menuitem"
                 aria-haspopup="true"
-                aria-expanded={active === "Hire Us" ? "true" : "false"}
-                onMouseEnter={() => setActive("Hire Us")}
+                aria-expanded={active === "Contact Us" ? "true" : "false"}
+                onMouseEnter={() => setActive("Contact Us")}
                 onClick={() =>
-                  setActive((cur) => (cur === "Hire Us" ? null : "Hire Us"))
+                  setActive((cur) => (cur === "Contact Us" ? null : "Contact Us"))
                 }
               >
-                Hire Us
+                Contact Us
                 <span className="xd-caret" aria-hidden="true"></span>
               </button>
-              {active === "Hire Us" && (
+              {active === "Contact Us" && (
                 <motion.div
                   className="xd-dropdown xd-dropdown--dark"
                   role="menu"
@@ -484,14 +636,13 @@ export default function Navbar() {
                 >
                   <div className="xd-dark">
                       <div className="xd-darkIntro">
-                        <div className="xd-darkTitle">Hire Us</div>
+                        <div className="xd-darkTitle">Contact Us</div>
                         <div className="xd-darkText">
-                          Bring in a skilled team to build, ship and scale your
-                          product with confidence.
+                          Talk to our team about your software requirements — from billing systems to enterprise and AI-powered solutions.
                         </div>
 
                         <a className="xd-megaAll" href="#">
-                          <span>START A PROJECT</span>
+                          <span>Start Your Project</span>
                           <span
                             className="xd-megaArrow"
                             aria-hidden="true"
@@ -502,41 +653,89 @@ export default function Navbar() {
                       <div className="xd-darkBody">
                         <div className="xd-megaCols">
                           <div className="xd-megaCol">
-                            <a className="xd-megaLink" href="#">
-                              Dedicated Team
-                            </a>
-                            <a className="xd-megaLink" href="#">
-                              Fixed Price Projects
-                            </a>
-                            <a className="xd-megaLink" href="#">
-                              Staff Augmentation
-                            </a>
-                            <a className="xd-megaLink" href="#">
-                              Product Sprint
-                            </a>
+                            <div className="xd-megaItem">
+                              <a className="xd-megaLink" href="/contact">
+                                Custom Software Development
+                              </a>
+                              <div className="text-xs text-slate-400">
+                                End-to-end software development for billing, banking &amp; enterprise systems
+                              </div>
+                            </div>
+                            <div className="xd-megaItem">
+                              <a className="xd-megaLink" href="/contact">
+                                Billing &amp; Financial Software
+                              </a>
+                              <div className="text-xs text-slate-400">
+                                GST billing, accounting, finance &amp; secure transaction systems
+                              </div>
+                            </div>
+                            <div className="xd-megaItem">
+                              <a className="xd-megaLink" href="/contact">
+                                Enterprise Application Solutions
+                              </a>
+                              <div className="text-xs text-slate-400">
+                                ERP, CRM, internal tools &amp; workflow management systems
+                              </div>
+                            </div>
+                            <div className="xd-megaItem">
+                              <a className="xd-megaLink" href="/contact">
+                                AI &amp; Automation Solutions
+                              </a>
+                              <div className="text-xs text-slate-400">
+                                Process automation, document AI &amp; smart business workflows
+                              </div>
+                            </div>
+                            <div className="xd-megaItem">
+                              <a className="xd-megaLink" href="/contact">
+                                Data Analytics &amp; Dashboards
+                              </a>
+                              <div className="text-xs text-slate-400">
+                                Business insights, reporting &amp; decision-making dashboards
+                              </div>
+                            </div>
                           </div>
                           <div className="xd-megaCol">
-                            <a className="xd-megaLink" href="#">
-                              UI/UX Designers
-                            </a>
-                            <a className="xd-megaLink" href="#">
-                              Frontend Developers
-                            </a>
-                            <a className="xd-megaLink" href="#">
-                              Backend Developers
-                            </a>
-                            <a className="xd-megaLink" href="#">
-                              QA &amp; Automation
-                            </a>
+                            <div className="xd-megaItem">
+                              <a className="xd-megaLink" href="/contact">
+                                Web &amp; Application Development
+                              </a>
+                              <div className="text-xs text-slate-400">
+                                Web apps, portals, SaaS &amp; business platforms
+                              </div>
+                            </div>
+                            <div className="xd-megaItem">
+                              <a className="xd-megaLink" href="/contact">
+                                Desktop Software (Windows)
+                              </a>
+                              <div className="text-xs text-slate-400">
+                                Billing, accounting &amp; enterprise desktop applications
+                              </div>
+                            </div>
+                            <div className="xd-megaItem">
+                              <a className="xd-megaLink" href="#">
+                                System Integration &amp; Cloud Setup
+                              </a>
+                              <div className="text-xs text-slate-400">
+                                APIs, cloud deployment &amp; third-party system integration
+                              </div>
+                            </div>
+                            <div className="xd-megaItem">
+                              <a className="xd-megaLink" href="#">
+                                Long-Term Support &amp; Maintenance
+                              </a>
+                              <div className="text-xs text-slate-400">
+                                Updates, performance, security &amp; ongoing support
+                              </div>
+                            </div>
                           </div>
                         </div>
 
                         <div className="xd-megaFooter">
                           <span className="xd-megaFooterText">
-                            Need experts quickly? We can start in days.
+                            Start a conversation to build, improve, or scale your business software.
                           </span>
-                          <a className="xd-megaContact" href="#">
-                            CONTACT US
+                          <a className="xd-megaContact" href="/contact">
+                            Start Your Project
                           </a>
                         </div>
                       </div>
@@ -546,8 +745,24 @@ export default function Navbar() {
             </li>
 
             <li className="xd-item" role="none">
-              <a className="xd-link" href="#" role="menuitem">
+              <a
+                className="xd-link"
+                href="/work"
+                role="menuitem"
+                onMouseEnter={() => setActive(null)}
+              >
                 Work
+              </a>
+            </li>
+
+            <li className="xd-item" role="none">
+              <a
+                className="xd-link"
+                href="/our-team"
+                role="menuitem"
+                onMouseEnter={() => setActive(null)}
+              >
+                Our Team
               </a>
             </li>
 
@@ -592,12 +807,11 @@ export default function Navbar() {
                       <div className="xd-darkIntro">
                         <div className="xd-darkTitle">About Xardent</div>
                         <div className="xd-darkText">
-                          A product-focused team building modern web, mobile and
-                          AI experiences.
+                          Xardent is a software development company focused on building reliable, scalable, and business-ready digital solutions for modern enterprises.
                         </div>
 
-                        <a className="xd-megaAll" href="#">
-                          <span>MEET THE TEAM</span>
+                        <a className="xd-megaAll" href="/about">
+                          <span>👉 Learn More About Us</span>
                           <span
                             className="xd-megaArrow"
                             aria-hidden="true"
@@ -608,32 +822,87 @@ export default function Navbar() {
                       <div className="xd-darkBody">
                         <div className="xd-megaCols">
                           <div className="xd-megaCol">
-                            <a className="xd-megaLink" href="#">
-                              Company
-                            </a>
-                            <a className="xd-megaLink" href="#">
-                              Our Process
-                            </a>
-                            <a className="xd-megaLink" href="#">
-                              Case Studies
-                            </a>
-                            <a className="xd-megaLink" href="#">
-                              Testimonials
-                            </a>
+                            <div className="xd-megaItem">
+                              <div className="text-sm font-semibold text-white mb-2">
+                                Who We Are
+                              </div>
+                              <a className="xd-megaLink" href="/about">
+                                Software Development Company
+                              </a>
+                              <a className="xd-megaLink" href="/about">
+                                Business & Enterprise Solutions Provider
+                              </a>
+                              <a className="xd-megaLink" href="/about">
+                                Technology & Automation Experts
+                              </a>
+                            </div>
+                            <div className="xd-megaItem">
+                              <div className="text-sm font-semibold text-white mb-2">
+                                What We Do
+                              </div>
+                              <a className="xd-megaLink" href="/about">
+                                Custom Software Development
+                              </a>
+                              <a className="xd-megaLink" href="/about">
+                                Web & Application Development
+                              </a>
+                              <a className="xd-megaLink" href="/about">
+                                Windows Desktop Software
+                              </a>
+                              <a className="xd-megaLink" href="/about">
+                                Billing & Financial Systems
+                              </a>
+                              <a className="xd-megaLink" href="/about">
+                                AI & Automation Solutions
+                              </a>
+                              <a className="xd-megaLink" href="/about">
+                                Data Analytics & Dashboards
+                              </a>
+                            </div>
                           </div>
                           <div className="xd-megaCol">
-                            <a className="xd-megaLink" href="#">
-                              Careers
-                            </a>
-                            <a className="xd-megaLink" href="#">
-                              Blog
-                            </a>
-                            <a className="xd-megaLink" href="#">
-                              Partnerships
-                            </a>
-                            <a className="xd-megaLink" href="#">
-                              Contact
-                            </a>
+                            <div className="xd-megaItem">
+                              <div className="text-sm font-semibold text-white mb-2">
+                                How We Work
+                              </div>
+                              <a className="xd-megaLink" href="/about">
+                                Requirement-driven development
+                              </a>
+                              <a className="xd-megaLink" href="/about">
+                                Secure & scalable architecture
+                              </a>
+                              <a className="xd-megaLink" href="/about">
+                                Long-term support & maintenance
+                              </a>
+                            </div>
+                            <div className="xd-megaItem">
+                              <div className="text-sm font-semibold text-white mb-2">
+                                Why Choose Xardent
+                              </div>
+                              <a className="xd-megaLink" href="/about">
+                                Business-focused solutions
+                              </a>
+                              <a className="xd-megaLink" href="/about">
+                                Clean & maintainable systems
+                              </a>
+                              <a className="xd-megaLink" href="/about">
+                                Trusted development process
+                              </a>
+                            </div>
+                            <div className="xd-megaItem">
+                              <div className="text-sm font-semibold text-white mb-2">
+                                Quick Links
+                              </div>
+                              <a className="xd-megaLink" href="/work">
+                                Our Work
+                              </a>
+                              <a className="xd-megaLink" href="/about">
+                                Our Process
+                              </a>
+                              <a className="xd-megaLink" href="/contact">
+                                Contact Us
+                              </a>
+                            </div>
                           </div>
                         </div>
 
@@ -641,7 +910,7 @@ export default function Navbar() {
                           <span className="xd-megaFooterText">
                             Want to know if we&apos;re a fit? Let&apos;s talk.
                           </span>
-                          <a className="xd-megaContact" href="#">
+                          <a className="xd-megaContact" href="/contact">
                             CONTACT US
                           </a>
                         </div>

@@ -600,38 +600,53 @@ body {
 }
 
 .xd-megaCol {
-  display: grid;
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.xd-megaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 4px;
 }
 
 .xd-megaLink {
   color: rgba(255, 255, 255, 0.88);
   text-decoration: none;
   font-size: 14px;
-  line-height: 1.2;
+  line-height: 1.4;
   position: relative;
   transform: translateX(0);
-  transition: color 160ms ease, transform 160ms ease;
+  transition: all 200ms ease;
+  padding: 8px 12px;
+  border-radius: 8px;
+  display: block;
 }
 
 .xd-megaLink:hover {
   color: #ffffff;
-  transform: translateX(4px);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .xd-megaLink::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -6px;
-  width: 0;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.35);
-  transition: width 200ms ease;
+  display: none;
 }
 
-.xd-megaLink:hover::after {
-  width: 22px;
+/* Service description styles */
+.xd-megaItem>div.text-xs {
+  margin: 0;
+  padding: 0 12px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+  line-height: 1.4;
+  transition: color 200ms ease;
+  text-align: left;
+}
+
+.xd-megaLink:hover+div.text-xs {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .xd-megaRight {

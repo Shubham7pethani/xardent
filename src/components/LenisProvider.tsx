@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 
 type LenisProviderProps = {
@@ -10,6 +11,7 @@ type LenisProviderProps = {
 const LenisProvider: React.FC<LenisProviderProps> = ({ children }) => {
   const lenisRef = useRef<Lenis | null>(null);
   const rafIdRef = useRef<number | null>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -67,6 +69,36 @@ const LenisProvider: React.FC<LenisProviderProps> = ({ children }) => {
       lenisRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const html = document.documentElement;
+    const body = document.body;
+
+    // Ensure we never keep the page in a scroll-locked state after client navigation.
+    html.style.overflow = "";
+    body.style.overflow = "";
+    body.style.position = "";
+    body.style.top = "";
+    body.style.width = "";
+
+    // Lenis sometimes needs a resize after route changes to recompute scroll height.
+    const lenis = lenisRef.current as any;
+    try {
+      lenis?.resize?.();
+    } catch {}
+
+    const t = window.setTimeout(() => {
+      try {
+        (lenisRef.current as any)?.resize?.();
+      } catch {}
+    }, 50);
+
+    return () => {
+      window.clearTimeout(t);
+    };
+  }, [pathname]);
 
   return <>{children}</>;
 };

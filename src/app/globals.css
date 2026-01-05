@@ -3,24 +3,57 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Shadcn/ui color variables */
+  --primary: 221.2 83.2% 53.3%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 0 0% 100%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 221.2 83.2% 53.3%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 47.4% 11.2%;
+  --radius: 0.5rem;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 0 0% 100%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
   }
 }
 
 body {
-  background-color: var(--background);
-  color: var(--foreground);
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
   font-family: Arial, Helvetica, sans-serif;
   transition: background-color 400ms ease, color 400ms ease;
 }
@@ -52,6 +85,27 @@ body.section-bg-dark {
   100% {
     transform: translate3d(-52px, -52px, 0);
   }
+}
+
+@keyframes xd-marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-xd-marquee {
+  animation: xd-marquee var(--duration, 40s) linear infinite;
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.55);
+  border: 0;
+  box-shadow: 0 30px 90px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(22px);
 }
 
 * {

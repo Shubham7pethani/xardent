@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { MagneticText } from "@/components/MagneticText";
 import { NextGenAnimated } from "@/components/NextGenAnimated";
 import { TextRotate } from "@/components/TextRotate";
+import { HeroBackground } from "@/components/ui/hero-background";
 import { MdOutlinePhone, MdOutlinePhoneInTalk } from "react-icons/md";
 
 export default function HeroSection() {
@@ -13,18 +14,7 @@ export default function HeroSection() {
 
   return (
     <section className="relative isolate overflow-hidden">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(46,97,255,0.38),transparent_65%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(1200px_700px_at_50%_-10%,rgba(46,97,255,0.22),transparent_72%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(1100px_650px_at_0%_0%,rgba(0,212,255,0.2),transparent_72%)]" />
-
-        <div className="absolute -top-44 left-[18%] h-140 w-275 rounded-full bg-linear-to-br from-blue-600/22 via-cyan-400/16 to-transparent blur-3xl motion-reduce:animate-none animate-[xd-float_14s_ease-in-out_infinite]" />
-        <div className="absolute -top-28 right-[8%] h-130 w-245 rounded-full bg-linear-to-br from-indigo-600/18 via-sky-400/14 to-transparent blur-3xl motion-reduce:animate-none animate-[xd-float_18s_ease-in-out_infinite]" />
-
-        <div className="absolute inset-0 opacity-[0.35] mask-[radial-gradient(ellipse_at_center,black_35%,transparent_72%)]">
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(15,23,42,0.10)_1px,transparent_1px),linear-gradient(to_bottom,rgba(15,23,42,0.10)_1px,transparent_1px)] bg-size-[52px_52px] motion-reduce:animate-none animate-[xd-grid_26s_linear_infinite]" />
-        </div>
-      </div>
+      <HeroBackground />
 
       <div className="relative mx-auto flex min-h-[calc(100svh-86px)] max-w-6xl flex-col items-center justify-between px-4 pb-24 pt-24 sm:px-6 sm:pb-28 sm:pt-32 lg:px-8">
         <div className="mx-auto w-full max-w-6xl text-center">
