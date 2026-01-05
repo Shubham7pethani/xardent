@@ -1044,22 +1044,22 @@ export default function OurTeamExteriorPage() {
         if (!signCtx) throw new Error("Missing canvas context");
 
         const grd = signCtx.createLinearGradient(0, 0, 1024, 256);
-        grd.addColorStop(0, "#0b1220");
-        grd.addColorStop(1, "#101b2f");
+        grd.addColorStop(0, "#f8fafc");
+        grd.addColorStop(1, "#e2e8f0");
         signCtx.fillStyle = grd;
         signCtx.fillRect(0, 0, 1024, 256);
 
-        signCtx.fillStyle = "rgba(255,255,255,0.06)";
+        signCtx.fillStyle = "rgba(15, 23, 42, 0.08)";
         for (let i = 0; i < 10; i++) {
           signCtx.fillRect(60 + i * 88, 14, 2, 228);
         }
 
-        signCtx.fillStyle = "#ffffff";
+        signCtx.fillStyle = "#0b1220";
         signCtx.font = "700 92px system-ui, -apple-system, Segoe UI, Roboto";
         signCtx.textBaseline = "middle";
         signCtx.fillText("XARDENT", 330, 128);
 
-        signCtx.fillStyle = "rgba(255,255,255,0.75)";
+        signCtx.fillStyle = "rgba(15, 23, 42, 0.65)";
         signCtx.font = "500 28px system-ui, -apple-system, Segoe UI, Roboto";
         signCtx.fillText("Software • AI • Automation", 334, 188);
 
@@ -1073,7 +1073,7 @@ export default function OurTeamExteriorPage() {
           if (disposed) return;
           signCtx.save();
           signCtx.globalCompositeOperation = "source-over";
-          signCtx.fillStyle = "rgba(255,255,255,0.08)";
+          signCtx.fillStyle = "rgba(15, 23, 42, 0.06)";
           signCtx.fillRect(42, 44, 240, 168);
           signCtx.restore();
           signCtx.drawImage(logoImg, 80, 64, 160, 128);
@@ -1087,8 +1087,25 @@ export default function OurTeamExteriorPage() {
           emissive: new THREE.Color(0x101020),
           emissiveIntensity: 0.65,
         });
-        const sign = new THREE.Mesh(new THREE.PlaneGeometry(16, 4), signMat);
-        sign.position.set(0, 13.1, 10.25);
+        const signSideMat = new THREE.MeshStandardMaterial({
+          color: 0xcbd5e1,
+          roughness: 0.85,
+          metalness: 0.05,
+        });
+        const signBackMat = new THREE.MeshStandardMaterial({
+          color: 0x94a3b8,
+          roughness: 0.9,
+          metalness: 0.03,
+        });
+        const sign = new THREE.Mesh(new THREE.BoxGeometry(16, 4, 0.5), [
+          signSideMat,
+          signSideMat,
+          signSideMat,
+          signSideMat,
+          signMat,
+          signBackMat,
+        ]);
+        sign.position.set(0, 14.25, 10.25);
         sign.castShadow = true;
         buildingGroup.add(sign);
 
@@ -1125,7 +1142,7 @@ export default function OurTeamExteriorPage() {
         playerHead.position.y = 2.05;
         player.add(playerHead);
 
-        player.position.set(-9.6, 0, 18);
+        player.position.set(9.5, 0, 18);
         scene.add(player);
 
         const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
@@ -1136,8 +1153,15 @@ export default function OurTeamExteriorPage() {
         let pointerLocked = false;
         const camEuler = new THREE.Euler(0, 0, 0, "YXZ");
 
-        const lookAtBuilding = new THREE.Vector3(-28 - player.position.x, 0, -10 - player.position.z);
-        camYaw = Math.atan2(lookAtBuilding.x, lookAtBuilding.z);
+        const entranceWorld = new THREE.Vector3();
+        entrance.getWorldPosition(entranceWorld);
+        const lookAtBuilding = new THREE.Vector3(
+          entranceWorld.x - player.position.x,
+          0,
+          entranceWorld.z - player.position.z
+        );
+        camYaw = Math.atan2(lookAtBuilding.x, lookAtBuilding.z) + Math.PI;
+        camPitch = -0.22;
 
         const attachFirstPersonCamera = () => {
           const el = renderer.domElement as HTMLCanvasElement;
@@ -1516,10 +1540,11 @@ export default function OurTeamExteriorPage() {
             dir.addScaledVector(right, moveX);
             if (dir.lengthSq() > 0) dir.normalize();
 
-            const speed = 5.2;
+            const speed = 7.5;
             player.position.addScaledVector(dir, speed * dt);
 
             const pLocal = buildingGroup.worldToLocal(player.position.clone());
+            const zInside = clamp(pLocal.z, -16.5, 10.2);
             const nearEntrance =
               Math.abs(pLocal.x) < openingW / 2 + 1.2 && pLocal.z > 6.8 && pLocal.z < 13.2;
             if (!insideOffice && dist < 3.0 && nearEntrance) insideOffice = true;
@@ -1617,3 +1642,4 @@ export default function OurTeamExteriorPage() {
     </main>
   );
 }
+
